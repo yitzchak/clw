@@ -20,6 +20,7 @@ jobs:
         os:
         - macos-latest
         - ubuntu-latest
+        - windows-latest
         lisp:
         - abcl
         - ccl
@@ -31,6 +32,14 @@ jobs:
           lisp: ccl
         - os: macos-latest
           lisp: abcl
+        - os: windows-latest
+          lisp: abcl
+        - os: windows-latest
+          lisp: ccl
+        - os: windows-latest
+          lisp: clasp
+        - os: windows-latest
+          lisp: ecl
 
     # run the job on every combination of "os" above
     runs-on: ${{ matrix.os }}
@@ -47,6 +56,11 @@ jobs:
       if: matrix.os == 'macos-latest'
       run: |
         brew install sbcl clozure-cl ecl clasp-developers/clasp/clasp-cl
+
+    - name: Install Windows dependencies
+      if: matrix.os == 'windows-latest'
+      run: |
+        choco install sbcl
 
     - name: ABCL environment variables
       if: matrix.lisp == 'abcl'
