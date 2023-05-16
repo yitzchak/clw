@@ -22,6 +22,8 @@ jobs:
         - ubuntu-22.04
         lisp:
         - ccl
+        - clasp
+        - ecl
         - sbcl
         exclude:
         - os: ubuntu-22.04
@@ -36,6 +38,16 @@ jobs:
       run: |
         echo -e "LISP=ccl64\nLOAD=--load\nEVAL=--eval\nQUIT=--eval \"(quit)\"" >> $GITHUB_ENV
 
+    - name: ECL environment variables
+      if: matrix.lisp == 'ecl'
+      run: |
+        echo -e "LISP=ecl\nLOAD=--load\nEVAL=--eval\nQUIT=--eval \"(quit)\""" >> $GITHUB_ENV
+
+    - name: CLASP environment variables
+      if: matrix.lisp == 'clasp'
+      run: |
+        echo -e "LISP=clasp\nLOAD=--load\nEVAL=--eval\nQUIT=--quit" >> $GITHUB_ENV
+
     - name: SBCL environment variables
       if: matrix.lisp == 'sbcl'
       run: |
@@ -45,12 +57,13 @@ jobs:
       if: matrix.os == 'ubuntu-22.04'
       run: |
         sudo apt-get update
-        sudo apt-get install -y sbcl
+        sudo apt-get install -y ecl sbcl
+        sudo bash -c "$(curl -fsSL https://www.thirdlaw.tech/pkg/clasp.sh)"
 
     - name: Install MacOS dependencies
       if: matrix.os == 'macos-latest'
       run: |
-        brew install sbcl clozure-cl
+        brew install sbcl clozure-cl ecl clasp/clasp-cl
 
     - uses: actions/checkout@v3
 
@@ -62,6 +75,6 @@ jobs:
         $LISP $LOAD quicklisp.lisp $EVAL "(quicklisp-quickstart:install)" $EVAL "(ql-util:without-prompting (ql:add-to-init-file))" $QUIT
         $LISP $EVAL "(ql:quickload '(:clw))" $QUIT
         
-    - name: Run Regression Tests
+    - name: Run Tests
       run: |
         $LISP $EVAL "(asdf:test-system :clw)"
