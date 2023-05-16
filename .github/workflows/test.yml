@@ -41,7 +41,7 @@ jobs:
     - name: ECL environment variables
       if: matrix.lisp == 'ecl'
       run: |
-        echo -e "LISP=ecl\nLOAD=--load\nEVAL=--eval\nQUIT=--eval \"(quit)\""" >> $GITHUB_ENV
+        echo -e "LISP=ecl\nLOAD=--load\nEVAL=--eval\nQUIT=--eval \"(quit)\"" >> $GITHUB_ENV
 
     - name: CLASP environment variables
       if: matrix.lisp == 'clasp'
@@ -63,7 +63,7 @@ jobs:
     - name: Install MacOS dependencies
       if: matrix.os == 'macos-latest'
       run: |
-        brew install sbcl clozure-cl ecl clasp/clasp-cl
+        brew install sbcl clozure-cl ecl clasp-developers/clasp/clasp-cl
 
     - uses: actions/checkout@v3
 
