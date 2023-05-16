@@ -29,11 +29,25 @@ jobs:
         exclude:
         - os: ubuntu-latest
           lisp: ccl
+        - os: macos-latest
+          lisp: abcl
 
     # run the job on every combination of "os" above
     runs-on: ${{ matrix.os }}
 
-    steps:
+    steps: 
+    - name: Install Ubuntu dependencies # we could only install what we need.
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y abcl ecl sbcl
+        sudo bash -c "$(curl -fsSL https://www.thirdlaw.tech/pkg/clasp.sh)"
+
+    - name: Install MacOS dependencies
+      if: matrix.os == 'macos-latest'
+      run: |
+        brew install sbcl clozure-cl ecl clasp-developers/clasp/clasp-cl
+
     - name: ABCL environment variables
       if: matrix.lisp == 'abcl'
       run: |
@@ -58,19 +72,6 @@ jobs:
       if: matrix.lisp == 'sbcl'
       run: |
         echo -e "LISP=sbcl\nLOAD=--load\nEVAL=--eval\nQUIT=--quit" >> $GITHUB_ENV
-
-    - name: Install Ubuntu dependencies
-      if: matrix.os == 'ubuntu-latest'
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y abcl ecl sbcl
-        sudo bash -c "$(curl -fsSL https://www.thirdlaw.tech/pkg/clasp.sh)"
-
-    - name: Install MacOS dependencies
-      if: matrix.os == 'macos-latest'
-      run: |
-        brew upgrade 
-        brew install abcl sbcl clozure-cl ecl clasp-developers/clasp/clasp-cl
 
     - uses: actions/checkout@v3
 
