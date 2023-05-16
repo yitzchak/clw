@@ -69,6 +69,7 @@ jobs:
     - name: Install MacOS dependencies
       if: matrix.os == 'macos-latest'
       run: |
+        brew upgrade openjdk
         brew install abcl sbcl clozure-cl ecl clasp-developers/clasp/clasp-cl
 
     - uses: actions/checkout@v3
