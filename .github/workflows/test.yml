@@ -24,6 +24,7 @@ jobs:
         - abcl
         - ccl
         - clasp
+        - clisp
         - ecl
         - sbcl
         exclude:
@@ -40,13 +41,13 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       run: |
         sudo apt-get update
-        sudo apt-get install -y abcl ecl sbcl
+        sudo apt-get install -y abcl clisp ecl sbcl
         sudo bash -c "$(curl -fsSL https://www.thirdlaw.tech/pkg/clasp.sh)"
 
     - name: Install MacOS dependencies
       if: matrix.os == 'macos-latest'
       run: |
-        brew install sbcl clozure-cl ecl clasp-developers/clasp/clasp-cl
+        brew install sbcl clisp clozure-cl ecl clasp-developers/clasp/clasp-cl
 
     - name: ABCL environment variables
       if: matrix.lisp == 'abcl'
@@ -57,6 +58,11 @@ jobs:
       if: matrix.lisp == 'ccl'
       run: |
         echo -e "LISP=ccl64\nLOAD=--load\nEVAL=--eval\nQUIT=--eval \"(quit)\"" >> $GITHUB_ENV
+
+    - name: CLISP environment variables
+      if: matrix.lisp == 'clisp'
+      run: |
+        echo -e "LISP=clisp\nLOAD=-l\nEVAL=-x\nQUIT=-x \"(quit)\"" >> $GITHUB_ENV
 
     - name: ECL environment variables
       if: matrix.lisp == 'ecl'
