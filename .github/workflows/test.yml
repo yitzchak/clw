@@ -51,19 +51,19 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y abcl ecl sbcl
         sudo bash -c "$(curl -fsSL https://www.thirdlaw.tech/pkg/clasp.sh)"
-        echo -e "CONFIG_HOME=$HOME/.config" >> $GITHUB_ENV
+        echo "CONFIG_HOME=$HOME/.config" >> $GITHUB_ENV
 
     - name: Install MacOS dependencies
       if: matrix.os == 'macos-latest'
       run: |
         brew install sbcl clozure-cl ecl clasp-developers/clasp/clasp-cl
-        echo -e "CONFIG_HOME=$HOME/.config" >> $GITHUB_ENV
+        echo "CONFIG_HOME=$HOME/.config" >> $GITHUB_ENV
 
     - name: Install Windows dependencies
       if: matrix.os == 'windows-latest'
       run: |
         choco install sbcl
-        echo -e "CONFIG_HOME=$LOCALAPPDATA/config" >> $GITHUB_ENV
+        echo "CONFIG_HOME=$LOCALAPPDATA/config" >> $GITHUB_ENV
 
     - name: ABCL environment variables
       if: matrix.lisp == 'abcl'
