@@ -95,7 +95,7 @@ jobs:
     - name: Install Quicklisp
       run: |
         mkdir -p $CONFIG_HOME/common-lisp/source-registry.conf.d
-        echo "(:TREE #P\"${{ github.workspace }}/\")" > $CONFIG_HOME/common-lisp/source-registry.conf.d/00.conf
+        echo "(:TREE #P\"${{ github.workspace }}/\")" | sed s/\\\\/\\// > $CONFIG_HOME/common-lisp/source-registry.conf.d/00.conf
         curl -kLO https://beta.quicklisp.org/quicklisp.lisp
         $LISP $LOAD quicklisp.lisp $EVAL "(quicklisp-quickstart:install)" $EVAL "(ql-util:without-prompting (ql:add-to-init-file))" $QUIT
         $LISP $EVAL "(ql:quickload '(:clw))" $QUIT
