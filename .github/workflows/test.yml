@@ -102,4 +102,4 @@ jobs:
         
     - name: Run Tests
       run: |
-        $LISP $EVAL "(asdf:test-system :clw)"
+        $LISP $EVAL "(asdf:test-system :clw)" $QUIT
