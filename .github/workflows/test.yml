@@ -20,6 +20,7 @@ jobs:
         os:
         - macos-latest
         - ubuntu-latest
+        - windows-latest
         lisp:
         - abcl
         - ccl
@@ -31,22 +32,38 @@ jobs:
           lisp: ccl
         - os: macos-latest
           lisp: abcl
+        - os: windows-latest
+          lisp: abcl
+        - os: windows-latest
+          lisp: ccl
+        - os: windows-latest
+          lisp: clasp
+        - os: windows-latest
+          lisp: ecl
 
     # run the job on every combination of "os" above
     runs-on: ${{ matrix.os }}
 
-    steps: 
+    steps:
     - name: Install Ubuntu dependencies # we could only install what we need.
       if: matrix.os == 'ubuntu-latest'
       run: |
         sudo apt-get update
         sudo apt-get install -y abcl ecl sbcl
         sudo bash -c "$(curl -fsSL https://www.thirdlaw.tech/pkg/clasp.sh)"
+        echo "CONFIG_HOME=$HOME/.config" >> $GITHUB_ENV
 
     - name: Install MacOS dependencies
       if: matrix.os == 'macos-latest'
       run: |
         brew install sbcl clozure-cl ecl clasp-developers/clasp/clasp-cl
+        echo "CONFIG_HOME=$HOME/.config" >> $GITHUB_ENV
+
+    - name: Install Windows dependencies
+      if: matrix.os == 'windows-latest'
+      run: |
+        choco install sbcl
+        echo "CONFIG_HOME=$LOCALAPPDATA/config" >> $GITHUB_ENV
 
     - name: ABCL environment variables
       if: matrix.lisp == 'abcl'
@@ -77,12 +94,12 @@ jobs:
 
     - name: Install Quicklisp
       run: |
-        mkdir -p $HOME/.config/common-lisp/source-registry.conf.d
-        echo "(:TREE #P\"${{ github.workspace }}/\")" > $HOME/.config/common-lisp/source-registry.conf.d/00.conf
+        mkdir -p $CONFIG_HOME/common-lisp/source-registry.conf.d
+        echo "(:TREE #P\"${{ github.workspace }}/\")" | sed s/\\\\/\\//g > $CONFIG_HOME/common-lisp/source-registry.conf.d/00.conf
         curl -kLO https://beta.quicklisp.org/quicklisp.lisp
         $LISP $LOAD quicklisp.lisp $EVAL "(quicklisp-quickstart:install)" $EVAL "(ql-util:without-prompting (ql:add-to-init-file))" $QUIT
         $LISP $EVAL "(ql:quickload '(:clw))" $QUIT
         
     - name: Run Tests
       run: |
-        $LISP $EVAL "(asdf:test-system :clw)"
+        $LISP $EVAL "(asdf:test-system :clw)" $QUIT
